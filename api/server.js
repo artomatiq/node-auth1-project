@@ -33,7 +33,7 @@ server.use('/api/auth', authRouter)
 server.use('/api/users', usersRouter)
 
 server.use(session({
-  name: 'giraffe',
+  name: 'chocolatechip',
   secret: 'ask Victoria',
   cookie: {
     maxAge: 1000 * 60 * 60,

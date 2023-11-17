@@ -12,7 +12,7 @@ function restricted(req, res, next) {
     next()
   }
   else {
-    next({status: 401, message: 'You shall not pass'})
+    next({status: 401, message: 'You shall not pass!'})
   }
 }
 
@@ -45,8 +45,12 @@ async function checkUsernameFree(req, res, next) {
 */
 async function checkUsernameExists(req, res, next) {
   try {
-    const exists = await !checkUsernameFree()
-    if (!exists) res.status(401).json({message: 'Invalid credentials'})
+    const existing = await Users.findBy({username: req.body.username})
+    if (!existing) res.status(401).json({message: 'Invalid credentials'})
+    else {
+      req.existing = existing
+      next()
+    }
   }
   catch (error) {
     next(error)

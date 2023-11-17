@@ -60,6 +60,22 @@ router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async
   }
  */
 
+  router.post('/login', Auth.checkUsernameExists, async (req, res, next) => {
+    console.log('we are here')
+    try {
+      if (bcrypt.compareSync(req.body.password, req.existing.password)) {
+        req.session.user = req.existing
+        res.status(200).json({message: `welcome ${req.existing.username}`})
+      }
+      else {
+        res.status(401).json({message: 'Invalid credentials'})
+      }
+    }
+    catch (error) {
+      next(error)
+    }
+  })
+
 
 /**
   3 [GET] /logout
