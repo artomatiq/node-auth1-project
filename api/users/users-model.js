@@ -10,8 +10,8 @@ const db = require('../../data/db-config')
 /**
   resolves to an ARRAY with all users that match the filter condition
  */
-function findBy(filter) {
-  return db('users')
+async function findBy(filter) {
+  return await db('users')
     .where(filter)
 }
 
