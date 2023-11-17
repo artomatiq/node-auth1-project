@@ -1,5 +1,3 @@
-// Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
-// middleware functions from `auth-middleware.js`. You will need them here!
 const express = require('express')
 const Auth = require('./auth-middleware')
 const Users = require('../users/users-model')
@@ -7,28 +5,7 @@ const bcrypt = require('bcryptjs')
 
 
 const router = express.Router()
-/**
-  1 [POST] /register { "username": "sue", "password": "1234" }
 
-  response:
-  status 200
-  {
-    "user_id": 2,
-    "username": "sue"
-  }
-
-  response on username taken:
-  status 422
-  {
-    "message": "Username taken"
-  }
-
-  response on password three chars or less:
-  status 422
-  {
-    "message": "Password must be longer than 3 chars"
-  }
- */
 router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async (req, res, next) => {
   try {
     const {username, password} = req.body
@@ -42,38 +19,20 @@ router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async
   }
 })
 
-
-
-/**
-  2 [POST] /login { "username": "sue", "password": "1234" }
-
-  response:
-  status 200
-  {
-    "message": "Welcome sue!"
-  }
-
-  response on invalid credentials:
-  status 401
-  {
-    "message": "Invalid credentials"
-  }
- */
-
-  router.post('/login', Auth.checkUsernameExists, async (req, res, next) => {
-    try {
-      if (bcrypt.compareSync(req.body.password, req.existing.password)) {
-        req.session.user = req.existing
-        res.status(200).json({message: `welcome ${req.existing.username}`})
-      }
-      else {
-        res.status(401).json({message: 'Invalid credentials'})
-      }
+router.post('/login', Auth.checkUsernameExists, async (req, res, next) => {
+  try {
+    if (bcrypt.compareSync(req.body.password, req.existing.password)) {
+      req.session.user = req.existing
+      res.status(200).json({message: `welcome ${req.existing.username}`})
     }
-    catch (error) {
-      next(error)
+    else {
+      res.status(401).json({message: 'Invalid credentials'})
     }
-  })
+  }
+  catch (error) {
+    next(error)
+  }
+})
 
 
 /**
@@ -92,5 +51,20 @@ router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async
   }
  */
 
-// Don't forget to add the router to the `exports` object so it can be required in other modules
+router.get('/logout', async (req, res, next) => {
+  if (req.session.user) {
+    req.session.destroy(error => {
+      if (error) {
+        res.json({message: 'you shall not leave'})
+      }
+      else res.status(200).json({message: 'logged out'})
+    })
+  }
+  else {
+    res.set('Set-cookie', 'chocolatechip=; SameSite=Strict; Path=/; Expires=Thu, 01 Jan 1970 00:00:00')
+    res.status(200).json({message: 'no session'})
+  }
+})
+
+
 module.exports = router
