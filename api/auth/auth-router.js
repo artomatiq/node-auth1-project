@@ -61,7 +61,6 @@ router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async
  */
 
   router.post('/login', Auth.checkUsernameExists, async (req, res, next) => {
-    console.log('we are here')
     try {
       if (bcrypt.compareSync(req.body.password, req.existing.password)) {
         req.session.user = req.existing
