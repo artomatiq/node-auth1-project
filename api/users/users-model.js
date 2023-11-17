@@ -13,6 +13,7 @@ const db = require('../../data/db-config')
 async function findBy(filter) {
   return await db('users')
     .where(filter)
+    .first()
 }
 
 /**

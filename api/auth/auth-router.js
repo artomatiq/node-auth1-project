@@ -29,7 +29,7 @@ const router = express.Router()
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('/register', Auth.checkPasswordLength, async (req, res, next) => {
+router.post('/register', Auth.checkPasswordLength, Auth.checkUsernameFree, async (req, res, next) => {
   try {
     const {username, password} = req.body
     const hash = await bcrypt.hashSync(password, 8)
